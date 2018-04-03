@@ -19,8 +19,12 @@ package Search;/*
 import Search.DoConfiguration;
 import twitter4j.*;
 
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -35,10 +39,21 @@ public class SearchTwitter {
      */
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
 
 
         String string_query = "ufal";
+        File arquivo;
+
+        arquivo = new File("tweets_unfiltered.txt");
+        FileOutputStream fos = new FileOutputStream(arquivo);
+
+        //Para remover links e hashtags do texto.
+        //Create Regex pattern to find urls
+        String urlPattern = "((https?|ftp|gopher|telnet|file|Unsure|http):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
+
+//Create a matcher with our 'urlPattern'
+        Matcher matcher;
 
 //        if (args.length < 1) {
 //            System.out.println("java twitter4j.examples.search.SearchTweets [query]");
@@ -52,8 +67,11 @@ public class SearchTwitter {
         int count = 0;
         String maceio_geo_id = "70d9237ded8be5f4";
         try {
-            Query query = new Query(string_query);
+            Date date = new Date();
+            Query query = new Query(string_query +" +exclude:retweets");
             QueryResult result;
+            String modifiedDate= new SimpleDateFormat("20180301").format(date);
+            query.setSince(modifiedDate);
             do {
                 result = twitter.search(query);
 
@@ -70,21 +88,53 @@ public class SearchTwitter {
                             || location.contains("Alagoas")
                             || location.contains("AL")) {
                         // TODO  - Only retrive information if tweeted from maceió
-                        String tweet_text = tweet.getUser().getScreenName() +
-                                " - " + tweet.getText();
+//                        String tweet_text = tweet.getUser().getScreenName() +
+//                                " - " + tweet.getText();
+                        String tweet_text = tweet.getText();
 
                         //TODO verify if RT is a important metric
                         if( ! tweet_text.contains("RT")) {
                             System.out.println(location);
 
-                            System.out.println("@" + tweet_text + "\n\n\n");
+                            String tweetWithoutUrl = tweet_text.replaceAll(urlPattern, "");
+
+                            //System.out.println("@" + tweet_text + "\n\n\n");
+                            System.out.println("@" + tweetWithoutUrl + "\n\n\n");
                             ++count;
+
+                            try {
+                                // Gravando no arquivo
+
+                                //String texto = "quero gravar este texto no arquivo";
+                                fos.write(tweetWithoutUrl.getBytes());
+                                String jump_line = "\n";
+                                //texto = "\nquero gravar este texto AQUI TAMBEM";
+                                fos.write(jump_line.getBytes());
+
+
+                                // Lendo do arquivo
+                                //arquivo = new File("arquivo.txt");
+                               // FileInputStream fis = new FileInputStream(arquivo);
+
+                                //int ln;
+                                //while ( (ln = fis.read()) != -1 ) {
+                                //    System.out.print( (char)ln );
+                               // }
+
+                                //fis.close();
+                            }
+                            catch (Exception ee) {
+                                ee.printStackTrace();
+                            }
                         }
                     }
                 }
 
 
             } while ((query = result.nextQuery()) != null);
+
+            //Fecha arquivo de texto
+            fos.close();
 
 
             System.out.println("tweets encontrados: " + String.valueOf(count));
@@ -95,6 +145,8 @@ public class SearchTwitter {
             te.printStackTrace();
             System.out.println("Failed to search tweets: " + te.getMessage());
             System.exit(-1);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }

@@ -3,6 +3,7 @@
     <CLASSES>
       <root url="file://$PROJECT_DIR$/lib" />
       <root url="jar://$USER_HOME$/Downloads/twitter4j-core-4.0.4.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/Java-Naive-Bayes-Classifier-1.0.7.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
