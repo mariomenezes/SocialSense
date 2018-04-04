@@ -94,12 +94,13 @@ public class SearchTwitter {
 
                         //TODO verify if RT is a important metric
                         if( ! tweet_text.contains("RT")) {
-                            System.out.println(location);
+                            //System.out.println(location);
 
                             String tweetWithoutUrl = tweet_text.replaceAll(urlPattern, "");
 
                             //System.out.println("@" + tweet_text + "\n\n\n");
-                            System.out.println("@" + tweetWithoutUrl + "\n\n\n");
+                            tweetWithoutUrl  = tweetWithoutUrl.replace ("\n", ""); // isto vai funcionar
+                            System.out.println(tweetWithoutUrl + "\n\n\n");
                             ++count;
 
                             try {
@@ -107,7 +108,7 @@ public class SearchTwitter {
 
                                 //String texto = "quero gravar este texto no arquivo";
                                 fos.write(tweetWithoutUrl.getBytes());
-                                String jump_line = "\n";
+                                String jump_line = "\n\n";
                                 //texto = "\nquero gravar este texto AQUI TAMBEM";
                                 fos.write(jump_line.getBytes());
 
