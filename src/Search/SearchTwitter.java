@@ -42,10 +42,10 @@ public class SearchTwitter {
     public static void main(String[] args) throws FileNotFoundException {
 
 
-        String string_query = "ufal";
+        String string_query = "UFAL";
         File arquivo;
 
-        arquivo = new File("tweets_unfiltered.txt");
+        arquivo = new File("tweets_unfilteredUFAL.csv");
         FileOutputStream fos = new FileOutputStream(arquivo);
 
         //Para remover links e hashtags do texto.
@@ -71,7 +71,11 @@ public class SearchTwitter {
             Query query = new Query(string_query +" +exclude:retweets");
             QueryResult result;
             String modifiedDate= new SimpleDateFormat("20180301").format(date);
+            String modifiedDateAprilSince= new SimpleDateFormat("20180301").format(date);
+            String modifiedDateAprilUntil= new SimpleDateFormat("20180328").format(date);
             query.setSince(modifiedDate);
+            //query.setSince(modifiedDateAprilSince);
+            //query.setUntil(modifiedDateAprilUntil);
             do {
                 result = twitter.search(query);
 
@@ -81,16 +85,21 @@ public class SearchTwitter {
                 for (Status tweet : tweets) {
                     String location = twitter.showUser(
                             tweet.getUser().getScreenName()).getLocation();
-                    if (location.contains("Maceió")
-                            || location.contains("maceió")
-                            || location.contains("Brasil")
-                            || location.contains("Brazil")
-                            || location.contains("Alagoas")
-                            || location.contains("AL")) {
+                    //if (//location.contains("Maceió")
+                            //|| location.contains("maceió")
+                            //|| location.contains("maceio")
+                            //|| location.contains("Maceio")
+                            //location.contains("Brasil")
+                            //|| location.contains("Brazil")){
+                            //|| location.contains("Alagoas")
+                            //|| location.contains("AL")) {
+                    {
                         // TODO  - Only retrive information if tweeted from maceió
 //                        String tweet_text = tweet.getUser().getScreenName() +
 //                                " - " + tweet.getText();
                         String tweet_text = tweet.getText();
+                        //String data = tweet.get
+                        Date d = tweet.getCreatedAt();
 
                         //TODO verify if RT is a important metric
                         if( ! tweet_text.contains("RT")) {
@@ -105,10 +114,12 @@ public class SearchTwitter {
 
                             try {
                                 // Gravando no arquivo
+                                String texto = (d + "," + tweetWithoutUrl);
 
                                 //String texto = "quero gravar este texto no arquivo";
-                                fos.write(tweetWithoutUrl.getBytes());
-                                String jump_line = "\n\n";
+                                //fos.write(tweetWithoutUrl.getBytes());
+                                fos.write(texto.getBytes());
+                                String jump_line = "\n";
                                 //texto = "\nquero gravar este texto AQUI TAMBEM";
                                 fos.write(jump_line.getBytes());
 
